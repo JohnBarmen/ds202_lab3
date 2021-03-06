@@ -80,14 +80,16 @@ To better manipulate the data I corresponded various responses to levels of happ
 4)
 ```{r 4}
 dat$polParty <-factor(dat$polParty)
-ggplot(data=dat, aes(x=polParty))+geom_bar()+facet_wrap(MarStat~happiness)
+ggplot(data=dat, aes(x=polParty, fill=polParty))+geom_bar()+facet_wrap(MarStat~happiness)
 ```
+Political party seems to have littel impact on how happy people seem to be, marriage seems to be a much higher predictor.  
 
 5)
 ```{r 5}
 ggplot(data=dat, aes(y=edu, x=MarStat, fill=MarStat))+geom_boxplot()
 ```
-Based on averages the No answer group of marige status were the best educated, otherwise ther are fairly even in two groups, Divorced/Married/Never married are about the same being consistantly higher than the Seperated/Widdowed which are fairly even with each other.
+Based on averages the No answer group of marige status were the best educated, otherwise there are fairly even in two groups, Divorced/Married/Never married are about the same being consistently higher than the Separated/Widowed which are fairly even with each other.  
+
 6)
 ```{r 6}
 dat$age[dat$age == "No answer"| dat$age == "Don't know"] <- -1
@@ -95,11 +97,12 @@ dat$age[dat$age == "89 or older"] <- 89
 dat$age <- strtoi(dat$age)
 ggplot(data=dat, aes(y=age, x=MarStat, fill=MarStat))+geom_boxplot()
 ```
+This looks about like what id expect, younger people are more frequently in the never married, older people in widowed, and aside from no answer the last three are all fairly even.
 
 ```{r}
-ggplot(data=dat, aes(x=happiness))+geom_histogram()+facet_wrap(~relig)
+ggplot(data=dat, aes(y=edu, x=relig, fill=relig))+geom_boxplot()
 ```
-
+across the board most religions have similar education levels. Hinduism is a stand out with slightly higher averages and Don't know being unsurprisingly slightly less than average, unsurprising because the edu for don't know is set to -1.
 
 
 
