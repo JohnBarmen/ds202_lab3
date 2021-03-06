@@ -1,0 +1,116 @@
+---
+title: "lab 3"
+author: "John Barmen"
+date: "3/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Part 1
+```{r}
+#install.packages('readxl')
+library(ggplot2)
+library(dplyr)
+library(stringr)
+dat <- readxl::read_xls("/Users/jrdba/OneDrive/Documents/DS202/ds202_lab3/GSS.xls")
+dat <- na.omit(dat)
+names(dat)
+dim(dat)
+names(dat)<-str_replace_all(names(dat), c(" " = "." , "," = "" ))
+dat<- rename(dat,
+    year = Gss.year.for.this.respondent,
+    relig = Rs.religious.preference,
+    income = Total.family.income,
+    edu = Highest.year.of.school.completed,
+    MarStat = Marital.status,
+    bal = Ballot.used.for.interview,
+    happiness = General.happiness,
+    polParty = Political.party.affiliation,
+    sex = Respondents.sex,
+    age = Age.of.respondent,
+    id = Respondent.id.number
+  )
+names(dat)
+dim(dat)
+```
+
+### Part 2
+1)
+```{r 1}
+dat$edu[dat$edu=="No answer"| dat$edu=="Don't know"] <- -1
+dat$edu<-strtoi(dat$edu)
+avg<-dat %>%
+  group_by(MarStat) %>%
+  summarize(Average=mean(edu)) %>%
+  ungroup()%>%arrange(-Average) %>%
+  data.frame
+avg
+
+```
+2)
+```{r 2}
+smort <- subset(dat, ((MarStat == "Never married" & edu > 13.35210)|
+                        (MarStat == "Divorced" & edu > 13.07889)|
+                        (MarStat == "No answer" & edu > 13.03704)|
+                        (MarStat == "Married" & edu > 12.93718)|
+                        (MarStat == "Separated" & edu > 11.80419)|
+                        (MarStat == "Widowed" & edu > 11.12742)))
+str(smort)
+```
+
+3)
+```{r 3}
+
+dat$MarStat <-factor(dat$MarStat)
+ggplot(dat, aes(happiness, MarStat))
+dat$happiness[dat$happiness == "No answer"| dat$happiness == "Don't know"|dat$happiness == "Not applicable"] <- 0
+dat$happiness[dat$happiness == "Not too happy"] <- 0
+dat$happiness[dat$happiness == "Pretty happy"] <- 1
+dat$happiness[dat$happiness == "Very happy"] <- 1
+dat$happiness <- strtoi(dat$happiness)
+ggplot(data=dat, aes(x=happiness))+geom_histogram()+facet_wrap(~MarStat)
+temp <- data.frame(dat$happiness, dat$MarStat)
+summary(temp)
+```
+To better manipulate the data I corresponded various responses to levels of happiness, 0 for not happy, 1 for happy. by far married people are more happy compared to their unhappy counterparts, but unmarried people are also fairly happy.  
+
+4)
+```{r 4}
+dat$polParty <-factor(dat$polParty)
+ggplot(data=dat, aes(x=polParty))+geom_bar()+facet_wrap(MarStat~happiness)
+```
+
+5)
+```{r 5}
+ggplot(data=dat, aes(y=edu, x=MarStat, fill=MarStat))+geom_boxplot()
+```
+Based on averages the No answer group of marige status were the best educated, otherwise ther are fairly even in two groups, Divorced/Married/Never married are about the same being consistantly higher than the Seperated/Widdowed which are fairly even with each other.
+6)
+```{r 6}
+dat$age[dat$age == "No answer"| dat$age == "Don't know"] <- -1
+dat$age[dat$age == "89 or older"] <- 89
+dat$age <- strtoi(dat$age)
+ggplot(data=dat, aes(y=age, x=MarStat, fill=MarStat))+geom_boxplot()
+```
+
+```{r}
+ggplot(data=dat, aes(x=happiness))+geom_histogram()+facet_wrap(~relig)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
